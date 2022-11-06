@@ -1,40 +1,23 @@
 package pl.umk.workshop.springintroduction.domain.numbermanager;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Component;
-import pl.umk.workshop.springintroduction.domain.UmkCloakroomConfiguration;
 import pl.umk.workshop.springintroduction.domain.models.ExceededMaxNumberException;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.IntStream;
 
-@Component
-@ConditionalOnProperty(
-        value="cloakroom.manager",
-        havingValue = "incremental",
-        matchIfMissing = true
-)
 public class IncrementalDepositNumberManager implements DepositNumberManager {
 
     private final Set<Integer> reservedNumbers = new HashSet<>();
 
-    private final UmkCloakroomConfiguration.DepositNumberManagerConfigurationProperties properties;
-
-    @Autowired
-    IncrementalDepositNumberManager(
-            UmkCloakroomConfiguration.DepositNumberManagerConfigurationProperties properties
-    ) {
-        this.properties = properties;
-    }
+    private final static Integer MAX_NUMBER = 100;
 
     @Override
     public Integer getNextFreeNumber() {
-        var freeNumber = IntStream.rangeClosed(1, properties.maxNumber())
+        var freeNumber = IntStream.rangeClosed(1, MAX_NUMBER)
                 .filter(number -> !reservedNumbers.contains(number))
                 .findFirst()
-                .orElseThrow(() -> new ExceededMaxNumberException(properties.maxNumber()));
+                .orElseThrow(() -> new ExceededMaxNumberException(MAX_NUMBER));
 
         reservedNumbers.add(freeNumber);
         return freeNumber;

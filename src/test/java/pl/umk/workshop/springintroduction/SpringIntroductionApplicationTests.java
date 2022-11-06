@@ -2,8 +2,6 @@ package pl.umk.workshop.springintroduction;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import pl.umk.workshop.springintroduction.domain.numbermanager.DepositNumberManager;
@@ -24,8 +22,6 @@ import static pl.umk.workshop.springintroduction.domain.models.Item.JACKET;
 
 // Tasks depend on each other. Please do them in order.
 class SpringIntroductionApplicationTests extends TestsBase {
-
-    private static final Logger logger = LoggerFactory.getLogger(SpringIntroductionApplicationTests.class);
 
     private UmkCloakroomFacade umkCloakroomFacade;
 
@@ -93,7 +89,7 @@ class SpringIntroductionApplicationTests extends TestsBase {
     @Test
     void gettingBeanFromSpringContext() {
         // when
-        var result = context.getBean("cloakroomFacade");
+        var result = context.getBean("");
 
         // then
         UmkCloakroomFacade facadeFromContext = (UmkCloakroomFacade) result;
