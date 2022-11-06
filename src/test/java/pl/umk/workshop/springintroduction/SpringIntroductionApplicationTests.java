@@ -85,18 +85,18 @@ class SpringIntroductionApplicationTests extends TestsBase {
     }
 
     // Get UmkCloakroomFacade bean from spring context
-    // TIP: method getBean
+    // TIP: method getBean()
     @Test
     void gettingBeanFromSpringContext() {
         // when
-        var result = context.getBean("");
+        var result = context;
 
         // then
         UmkCloakroomFacade facadeFromContext = (UmkCloakroomFacade) result;
         facadeFromContext.depositItems(new Student("Amadeusz", "Zaradny"), List.of(JACKET));
     }
 
-    // 1. Create second version of DepositNumberManager which generates only even numbers (let's name this EvenDepositNumberManager)
+    // 1. Create second version of DepositNumberManager which generates only even numbers (extend class EvenDepositNumberManager)
     // 2. Create a spring bean with that implementation and use this as default (primary) implementation
     // ATTENTION: Do not change existing implementation (IncrementalDepositNumberManager)
     // TIP: @Primary
