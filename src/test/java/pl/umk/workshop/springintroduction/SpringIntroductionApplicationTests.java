@@ -5,13 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import pl.umk.workshop.springintroduction.domain.numbermanager.DepositNumberManager;
 import pl.umk.workshop.springintroduction.domain.UmkCloakroomFacade;
-import pl.umk.workshop.springintroduction.domain.UmkCloakroomFacadeImpl;
 import pl.umk.workshop.springintroduction.domain.models.Student;
 import pl.umk.workshop.springintroduction.infrastructure.UmkCloakroomRepository;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static pl.umk.workshop.springintroduction.domain.models.Item.JACKET;
 
 class SpringIntroductionApplicationTests extends TestsBase {
@@ -37,25 +35,19 @@ class SpringIntroductionApplicationTests extends TestsBase {
         this.context = context;
     }
 
-    // Create beans in the spring context and inject them to UmkCloakroomFacadeImpl using configuration class
-    // TIP: Look at @Bean and @Configuration
+    // Get UmkCloakroomFacade bean from spring context
+    // TIP: method getBean()
+    // Comment: You can define a name of the Bean using "name" attribute in @Bean annotation.
+    // If you do not define a 'name' attribute Spring framework will use a method's name.
+    // In our case a method in `UmkCloakroomFacadeConfiguration` class that injects `UmkCloakroomFacade`
+    // is named `umkCloakroomFacade` so Spring will name our Bean like that.
     @Test
-    void dependencyInjectionWithConfigurationClass() {
-        // given
-        var student = new Student("Amadeusz", "Zaradny");
-        var items = List.of(JACKET);
-
+    void gettingBeanFromSpringContext() {
         // when
-        var result = umkCloakroomFacade.depositItems(student, items);
+        var result = context.getBean("umkCloakroomFacade");
 
         // then
-        var deposit = umkCloakroomRepository.findById(result.depositId());
-        assertEquals(List.of(JACKET), deposit.items());
-        assertEquals("Amadeusz", deposit.student().name());
-        assertEquals("Zaradny", deposit.student().surname());
-
-        // and
-        assertNotConfiguredWithAnnotations(UmkCloakroomFacadeImpl.class);
-        assertNotConfiguredWithAnnotations(UmkCloakroomFacade.class);
+        UmkCloakroomFacade facadeFromContext = (UmkCloakroomFacade) result;
+        facadeFromContext.depositItems(new Student("Amadeusz", "Zaradny"), List.of(JACKET));
     }
 }
