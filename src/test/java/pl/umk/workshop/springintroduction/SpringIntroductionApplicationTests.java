@@ -13,7 +13,7 @@ import pl.umk.workshop.springintroduction.infrastructure.UmkCloakroomRepository;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static pl.umk.workshop.springintroduction.domain.models.Item.JACKET;
 
 class SpringIntroductionApplicationTests extends TestsBase {
@@ -39,16 +39,14 @@ class SpringIntroductionApplicationTests extends TestsBase {
         this.context = context;
     }
 
-    // 1. Create second version of DepositNumberManager which generates only even numbers (extend class EvenDepositNumberManager)
-    // 2. Create a spring bean with that implementation and use this as default (primary) implementation
-    // ATTENTION: Do not change existing implementation (IncrementalDepositNumberManager)
-    // TIP: @Primary
-    // Comment: We have two implementations in the Spring Context now, namely:
-    // 1. IncrementalDepositNumberManager
-    // 2. EvenDepositNumberManager
-    // We have to point a default implementation to help Spring Framework choose which one inject to our application.
+
+    // Use in application IncrementalDepositNumberManager
+    // ATTENTION: Do not change existing implementations of DepositNumberManager
+    // TIP: @Qualifier
+    // Comment: Like in the previous test we have two implementations in the Spring Context. Moreover, one of them is
+    // our default implementation. So we have to choose explicitly desired implementation.
     @Test
-    void primaryBeans() {
+    void qualifyingBeans() {
         // given
         var student = new Student("Amadeusz", "Zaradny");
         var items = List.of(JACKET);
@@ -58,8 +56,8 @@ class SpringIntroductionApplicationTests extends TestsBase {
 
         // then
         var deposits = umkCloakroomRepository.findAll();
-        var depositsNumbers = deposits.stream().map(Deposit::depositId);
-        assertTrue(depositsNumbers.allMatch(number -> number % 2 == 0));
+
+        assertEquals(5050, deposits.stream().map(Deposit::depositId).reduce(Integer::sum).get());
     }
 
     private void fillCloakroom(Student student, List<Item> items) {
