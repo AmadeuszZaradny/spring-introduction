@@ -5,16 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import pl.umk.workshop.springintroduction.domain.numbermanager.DepositNumberManager;
 import pl.umk.workshop.springintroduction.domain.UmkCloakroomFacade;
-import pl.umk.workshop.springintroduction.domain.models.Deposit;
-import pl.umk.workshop.springintroduction.domain.models.ExceededMaxNumberException;
-import pl.umk.workshop.springintroduction.domain.models.Item;
-import pl.umk.workshop.springintroduction.domain.models.Student;
+import pl.umk.workshop.springintroduction.domain.numbermanager.EvenDepositNumberManager;
 import pl.umk.workshop.springintroduction.infrastructure.UmkCloakroomRepository;
 
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static pl.umk.workshop.springintroduction.domain.models.Item.JACKET;
 
 class SpringIntroductionApplicationTests extends TestsBase {
 
@@ -40,32 +34,18 @@ class SpringIntroductionApplicationTests extends TestsBase {
     }
 
 
-    // Extract max number to application configuration
-    // ATTENTION: You should remove constant value MAX_NUMBER
-    // TIP: @ConfigurationProperties or @Value
-    // Comment: Sometimes you want to change some constants in your application.
-    // To make it easy avoiding hardcoded values we can use configuration files like `application.properties`.
+    // Add to the application.properties a configuration with path 'cloakroom.manager'. When this configuration
+    // is set to 'incremental' application should use IncrementalDepositNumberManager, but when it is set to 'even'
+    // application should use EvenDepositNumberManager.
+    // ATTENTION: Set property to 'cloakroom.manager=even'
+    // TIP: @ConditionalOnProperty
     @Test
-    void readingProperties() {
-        // given
-        var student = new Student("Amadeusz", "Zaradny");
-        var items = List.of(JACKET);
+    void conditionalBeanCreation() {
+        // expect
+        var property = context.getEnvironment().getProperty("cloakroom.manager");
+        var manager = context.getBean(DepositNumberManager.class);
 
-        // when
-        fillCloakroom(student, items);
-
-        // then
-        var deposits = umkCloakroomRepository.findAll();
-        assertEquals(200, deposits.stream().map(Deposit::depositId).reduce(Integer::max).get());
-    }
-
-    private void fillCloakroom(Student student, List<Item> items) {
-        while (true) {
-            try {
-                umkCloakroomFacade.depositItems(student, items);
-            } catch (ExceededMaxNumberException ex) {
-                break;
-            }
-        }
+        assertEquals("even", property);
+        assertEquals(EvenDepositNumberManager.class, manager.getClass());
     }
 }
