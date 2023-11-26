@@ -5,11 +5,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import pl.umk.workshop.springintroduction.domain.numbermanager.DepositNumberManager;
 import pl.umk.workshop.springintroduction.domain.UmkCloakroomFacade;
+import pl.umk.workshop.springintroduction.domain.models.Deposit;
+import pl.umk.workshop.springintroduction.domain.models.ExceededMaxNumberException;
+import pl.umk.workshop.springintroduction.domain.models.Item;
 import pl.umk.workshop.springintroduction.domain.models.Student;
 import pl.umk.workshop.springintroduction.infrastructure.UmkCloakroomRepository;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static pl.umk.workshop.springintroduction.domain.models.Item.JACKET;
 
 class SpringIntroductionApplicationTests extends TestsBase {
@@ -35,19 +39,36 @@ class SpringIntroductionApplicationTests extends TestsBase {
         this.context = context;
     }
 
-    // Get UmkCloakroomFacade bean from spring context
-    // TIP: method getBean()
-    // Comment: You can define a name of the Bean using "name" attribute in @Bean annotation.
-    // If you do not define a 'name' attribute Spring framework will use a method's name.
-    // In our case a method in `UmkCloakroomFacadeConfiguration` class that injects `UmkCloakroomFacade`
-    // is named `umkCloakroomFacade` so Spring will name our Bean like that.
+    // 1. Create second version of DepositNumberManager which generates only even numbers (extend class EvenDepositNumberManager)
+    // 2. Create a spring bean with that implementation and use this as default (primary) implementation
+    // ATTENTION: Do not change existing implementation (IncrementalDepositNumberManager)
+    // TIP: @Primary
+    // Comment: We have two implementations in the Spring Context now, namely:
+    // 1. IncrementalDepositNumberManager
+    // 2. EvenDepositNumberManager
+    // We have to point a default implementation to help Spring Framework choose which one inject to our application.
     @Test
-    void gettingBeanFromSpringContext() {
+    void primaryBeans() {
+        // given
+        var student = new Student("Amadeusz", "Zaradny");
+        var items = List.of(JACKET);
+
         // when
-        var result = context.getBean("umkCloakroomFacade");
+        fillCloakroom(student, items);
 
         // then
-        UmkCloakroomFacade facadeFromContext = (UmkCloakroomFacade) result;
-        facadeFromContext.depositItems(new Student("Amadeusz", "Zaradny"), List.of(JACKET));
+        var deposits = umkCloakroomRepository.findAll();
+        var depositsNumbers = deposits.stream().map(Deposit::depositId);
+        assertTrue(depositsNumbers.allMatch(number -> number % 2 == 0));
+    }
+
+    private void fillCloakroom(Student student, List<Item> items) {
+        while (true) {
+            try {
+                umkCloakroomFacade.depositItems(student, items);
+            } catch (ExceededMaxNumberException ex) {
+                break;
+            }
+        }
     }
 }

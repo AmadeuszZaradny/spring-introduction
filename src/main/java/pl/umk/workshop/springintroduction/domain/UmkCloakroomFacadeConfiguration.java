@@ -2,7 +2,9 @@ package pl.umk.workshop.springintroduction.domain;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import pl.umk.workshop.springintroduction.domain.numbermanager.DepositNumberManager;
+import pl.umk.workshop.springintroduction.domain.numbermanager.EvenDepositNumberManager;
 import pl.umk.workshop.springintroduction.domain.numbermanager.IncrementalDepositNumberManager;
 import pl.umk.workshop.springintroduction.infrastructure.UmkCloakroomRepository;
 
@@ -18,7 +20,13 @@ public class UmkCloakroomFacadeConfiguration {
     }
 
     @Bean
-    DepositNumberManager depositNumberManager() {
+    DepositNumberManager incrementalDepositNumberManager() {
         return new IncrementalDepositNumberManager();
+    }
+
+    @Primary
+    @Bean
+    DepositNumberManager evenDepositNumberManager() {
+        return new EvenDepositNumberManager();
     }
 }
