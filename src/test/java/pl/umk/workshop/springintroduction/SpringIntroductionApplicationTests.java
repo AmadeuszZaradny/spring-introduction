@@ -34,18 +34,12 @@ class SpringIntroductionApplicationTests extends TestsBase {
     }
 
 
-    // Add to the application.properties a configuration with path 'cloakroom.manager'. When this configuration
-    // is set to 'incremental' application should use IncrementalDepositNumberManager, but when it is set to 'even'
-    // application should use EvenDepositNumberManager.
-    // ATTENTION: Set property to 'cloakroom.manager=even'
-    // TIP: @ConditionalOnProperty
+    // Using class CloakroomFeeder add 10 deposits to database after the application has started
+    // TIP: @PostConstruct
+    // Note: @PreDestroy is interesting too :)
     @Test
-    void conditionalBeanCreation() {
+    void postConstructing() {
         // expect
-        var property = context.getEnvironment().getProperty("cloakroom.manager");
-        var manager = context.getBean(DepositNumberManager.class);
-
-        assertEquals("even", property);
-        assertEquals(EvenDepositNumberManager.class, manager.getClass());
+        assertEquals(10, umkCloakroomRepository.findAll().size());
     }
 }
