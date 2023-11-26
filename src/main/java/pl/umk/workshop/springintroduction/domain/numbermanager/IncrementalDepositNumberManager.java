@@ -1,11 +1,13 @@
 package pl.umk.workshop.springintroduction.domain.numbermanager;
 
+import org.springframework.stereotype.Component;
 import pl.umk.workshop.springintroduction.domain.models.ExceededMaxNumberException;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.IntStream;
 
+@Component
 public class IncrementalDepositNumberManager implements DepositNumberManager {
 
     private final Set<Integer> reservedNumbers = new HashSet<>();
