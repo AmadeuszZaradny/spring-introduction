@@ -40,13 +40,13 @@ class SpringIntroductionApplicationTests extends TestsBase {
     }
 
 
-    // Use in application IncrementalDepositNumberManager
-    // ATTENTION: Do not change existing implementations of DepositNumberManager
-    // TIP: @Qualifier
-    // Comment: Like in the previous test we have two implementations in the Spring Context. Moreover, one of them is
-    // our default implementation. So we have to choose explicitly desired implementation.
+    // Extract max number to application configuration
+    // ATTENTION: You should remove constant value MAX_NUMBER
+    // TIP: @ConfigurationProperties or @Value
+    // Comment: Sometimes you want to change some constants in your application.
+    // To make it easy avoiding hardcoded values we can use configuration files like `application.properties`.
     @Test
-    void qualifyingBeans() {
+    void readingProperties() {
         // given
         var student = new Student("Amadeusz", "Zaradny");
         var items = List.of(JACKET);
@@ -56,8 +56,7 @@ class SpringIntroductionApplicationTests extends TestsBase {
 
         // then
         var deposits = umkCloakroomRepository.findAll();
-
-        assertEquals(5050, deposits.stream().map(Deposit::depositId).reduce(Integer::sum).get());
+        assertEquals(200, deposits.stream().map(Deposit::depositId).reduce(Integer::max).get());
     }
 
     private void fillCloakroom(Student student, List<Item> items) {
