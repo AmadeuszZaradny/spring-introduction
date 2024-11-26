@@ -1,9 +1,9 @@
 package pl.umk.workshop.springintroduction.domain;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 import pl.umk.workshop.springintroduction.domain.models.Student;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 
 import static pl.umk.workshop.springintroduction.domain.models.Item.JACKET;
